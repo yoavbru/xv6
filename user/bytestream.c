@@ -9,25 +9,12 @@
 
 int
 main(int argc, char *argv[]) {
-    int last_read;
-    char *p;
     char buffer[BUFFER_SIZE];
-    int copy_length;
 
-    p = buffer;
-    copy_length = 0;
-    last_read = read(STDIN, p, BUFFER_SIZE - copy_length); 
-    while (last_read > 0) {
-        copy_length = copy_length + last_read;
-        p = p + last_read;
-        while (*p != '\0') {
-            p--;
+    while (strlen(gets(buffer, BUFFER_SIZE))) {
+        for (int i = 0; buffer[i]; i++) {
+            printf("%d, ", buffer[i]);
         }
-        last_read = read(STDIN, p, BUFFER_SIZE - copy_length);
-    }
-    
-    for (int i = 0; i < copy_length; i++) {
-        printf("%d, ", buffer[i]);
     }
     printf("\nBUFFER: %s\n", buffer);
 }
