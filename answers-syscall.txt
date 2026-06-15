@@ -1,0 +1,8 @@
+(usertrap() at kernel/trap.c) called syscall
+a7 = 0x7, and it represents the exec syscall number
+CPU was previously in user mode, because $sstatus[8] == 0
+num corresponds with $a3
+the kernel crashed from an invalid memory access, 
+    confirmed by scause value (13) that means page fault.
+
+process name is initcode, pid = 1
