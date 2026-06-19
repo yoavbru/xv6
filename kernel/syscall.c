@@ -134,7 +134,8 @@ static uint64 (*syscalls[])(void) = {
 
 static char *syscall_names[] = {
   "", "fork", "exit", "wait", "pipe", "read", "kill", "exec", "fstat", "chdir", "dup",
-  "getpid", "sbrk", "sleep", "uptime", "open", "write", "mknod", "unlink", "mkdir", "close"
+  "getpid", "sbrk", "sleep", "uptime", "open", "write", "mknod", "unlink", "link", "mkdir", "close",
+  "trace", "sysinfo",
 };
 
 void
@@ -148,8 +149,8 @@ syscall(void)
     // Use num to lookup the system call function for num, call it,
     // and store its return value in p->trapframe->a0
     p->trapframe->a0 = syscalls[num]();
-
-    if (1 << num & p->trace_mask) {
+    
+    if ((1 << num) & (p->trace_mask)) {
       printf("%d: syscall %s -> %d\n", p->pid, syscall_names[num], p->trapframe->a0);
     }
   } else {

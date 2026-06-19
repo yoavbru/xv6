@@ -101,20 +101,33 @@ sys_trace(void)
   argint(0, &mask);
 
   myproc()->trace_mask = mask;
-  return myproc()->trace_mask;
+  return 0;
 }
 
 uint64
 sys_sysinfo(void)
 {
+  struct proc *p;
   uint64 addr;
-  struct sysinfo *info;
+  uint64 freemem;
+  uint64 nproc;
+  int valid;
 
   argaddr(0, &addr);
-  info = (struct sysinfo *)addr;
 
-  info->freemem = free_size();
-  info->nproc = free_proc_count();
+  valid = addr % sizeof(struct sysinfo);
+  if (valid != 0) {
+    return -1;
+  }
+  
+  p = myproc();
+
+  freemem = free_size();
+  nproc = proc_count();
+
+  struct sysinfo info = {freemem, nproc};
+
+  copyout(p->pagetable, addr, (char *)&info, sizeof(info));
 
   return 0;
 }

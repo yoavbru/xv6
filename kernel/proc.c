@@ -298,6 +298,7 @@ fork(void)
 
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
+  np->trace_mask = p->trace_mask;
 
   // Cause fork to return 0 in the child.
   np->trapframe->a0 = 0;
@@ -311,7 +312,6 @@ fork(void)
   safestrcpy(np->name, p->name, sizeof(p->name));
 
   pid = np->pid;
-  np->trace_mask = p->trace_mask;
 
 
   release(&np->lock);
@@ -684,14 +684,14 @@ procdump(void)
   }
 }
 
-int
-free_proc_count(void) {
+uint64
+proc_count(void) {
   struct proc *p;
-  int counter;
+  uint64 counter;
 
   counter = 0;
   for(p = proc; p < &proc[NPROC]; p++) {
-    if (p->state == UNUSED) {
+    if (p->state != UNUSED) {
       counter++;
     }
   }
