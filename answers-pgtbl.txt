@@ -1,0 +1,10 @@
+1. stat/fstat:
+    on open, put relvant data in shared syscall page
+    write to buffer from syscall page
+2.
+    page 0 holds process context
+    page 2 is user stack
+
+    page 1 would be inaccessible, is a stack guard
+
+    the third to last page is USYSCALL

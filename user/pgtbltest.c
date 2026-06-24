@@ -38,7 +38,7 @@ ugetpid_test()
     if (ret != 0) {
       wait(&ret);
       if (ret != 0)
-        exit(1);
+      exit(1);
       continue;
     }
     if (getpid() != ugetpid())
