@@ -96,12 +96,17 @@ struct proc {
   struct proc *parent;         // Parent process
 
   // these are private to the process, so p->lock need not be held.
-  uint64 kstack;               // Virtual address of kernel stack
-  uint64 sz;                   // Size of process memory (bytes)
-  pagetable_t pagetable;       // User page table
-  struct trapframe *trapframe; // data page for trampoline.S
-  struct context context;      // swtch() here to run process
-  struct file *ofile[NOFILE];  // Open files
-  struct inode *cwd;           // Current directory
-  char name[16];               // Process name (debugging)
+  uint64 kstack;                    // Virtual address of kernel stack
+  uint64 sz;                        // Size of process memory (bytes)
+  pagetable_t pagetable;            // User page table
+  struct trapframe *trapframe;      // data page for trampoline.S
+  struct trapframe prev_trapframe;  // backup page for interrupts. could be implemented as a pointer, but then it would allocate an entire page.
+  struct context context;           // swtch() here to run process
+  struct file *ofile[NOFILE];       // Open files
+  struct inode *cwd;                // Current directory
+  char name[16];                    // Process name (debugging)
+  uint64 handler_addr;              // SYS_sigalarm handler address
+  uint handle_period;               // SYS_sigalarm handler call time
+  uint ticks_passed;                // num of ticks since last periodic handler call
+  int is_handling;                  // to check if the handler is currently being executed
 };

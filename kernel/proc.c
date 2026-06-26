@@ -146,6 +146,11 @@ found:
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
 
+  p->handler_addr = 0;
+  p->handle_period = 0;
+  p->ticks_passed = 0;
+  p->is_handling = 0;
+
   return p;
 }
 
@@ -168,6 +173,10 @@ freeproc(struct proc *p)
   p->chan = 0;
   p->killed = 0;
   p->xstate = 0;
+  p->handler_addr = 0;
+  p->handle_period = 0;
+  p->ticks_passed = 0;
+  p->is_handling = 0;
   p->state = UNUSED;
 }
 

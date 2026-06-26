@@ -1,0 +1,16 @@
+1. a(i) registers hold function call arguments. for example, a2 holds the "13" for printf
+
+2. 
+    - f was called on line 26 of main
+    - g was called on line 14 of f
+    the compiler calculated f(8) + 1 = g(8) + 1 = 12
+
+3. printf is located at 0x630 (= 0x600 + 0x30 = 1536 + 0x30)
+
+4. the value of ra is 0x30 (= 48) because ra is caller saved and was changed to 0x30 in line 0x30
+
+5. code will print "He110 World". on big-endian, i should equal 0x726c6400.
+    57616 doesn't need to change, because endianness only effects memory.
+
+6. after "y=", an unknown integer will be printed.
+    that is because printf will use register a2's previous value due to it not being changed here.
