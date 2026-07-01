@@ -1,0 +1,5 @@
+on method put, the entry is set to 0.
+one thread could set the entry to 0 while another is setting the entry another value
+because of it the entry will be lost
+
+same issue in get
