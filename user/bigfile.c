@@ -23,8 +23,9 @@ main()
     if(cc <= 0)
       break;
     blocks++;
-    if (blocks % 100 == 0)
+    if (blocks % 100 == 0){
       printf(".");
+    }
   }
 
   printf("\nwrote %d blocks\n", blocks);

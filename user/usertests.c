@@ -586,6 +586,7 @@ writebig(char *s)
     exit(1);
   }
 
+
   for(i = 0; i < MAXFILE; i++){
     ((int*)buf)[0] = i;
     if(write(fd, buf, BSIZE) != BSIZE){
@@ -617,12 +618,13 @@ writebig(char *s)
     }
     if(((int*)buf)[0] != n){
       printf("%s: read content of block %d is %d\n", s,
-             n, ((int*)buf)[0]);
-      exit(1);
+        n, ((int*)buf)[0]);
+        exit(1);
+      }
+      n++;
     }
-    n++;
-  }
-  close(fd);
+    close(fd);
+
   if(unlink("big") < 0){
     printf("%s: unlink big failed\n", s);
     exit(1);
