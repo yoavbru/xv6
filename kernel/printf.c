@@ -116,12 +116,39 @@ printf(char *fmt, ...)
 }
 
 void
+backtrace(void)
+{
+  uint64 fp;
+  uint64 *fpointer;
+  uint64 ra;
+  uint64 page;
+
+  
+  fp = r_fp();
+  fpointer = (uint64 *)fp;
+  page = PGROUNDDOWN(fp);
+
+  printf("backtrace:\n");
+  
+  while (PGROUNDDOWN(fp) == page) {
+    ra = *(fpointer - 1); //  uint64 = 8 bytes, to 1 -> 8 in pointer arithmetic
+    fp = *(fpointer - 2); //  same here for 2, 16
+
+    fpointer = (uint64 *)fp;
+
+    printf("%p\n", ra);
+
+  }
+}
+
+void
 panic(char *s)
 {
   pr.locking = 0;
   printf("panic: ");
   printf(s);
   printf("\n");
+  backtrace();
   panicked = 1; // freeze uart output from other CPUs
   for(;;)
     ;

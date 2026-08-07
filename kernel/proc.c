@@ -289,14 +289,15 @@ fork(void)
   }
 
   // Copy user memory from parent to child.
+
+  
   if(uvmcopy(p->pagetable, np->pagetable, p->sz) < 0){
     freeproc(np);
     release(&np->lock);
     return -1;
-  }
+  }  
   np->sz = p->sz;
-
-  // copy saved user registers.
+    // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
 
   // Cause fork to return 0 in the child.
@@ -314,14 +315,15 @@ fork(void)
 
   release(&np->lock);
 
+  
   acquire(&wait_lock);
   np->parent = p;
   release(&wait_lock);
-
+  
   acquire(&np->lock);
   np->state = RUNNABLE;
   release(&np->lock);
-
+  
   return pid;
 }
 

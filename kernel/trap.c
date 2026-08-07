@@ -46,6 +46,10 @@ usertrap(void)
   w_stvec((uint64)kernelvec);
 
   struct proc *p = myproc();
+  pte_t *pte;
+  char *mem;
+  uint64 pa, va;
+  uint flags;
   
   // save user program counter.
   p->trapframe->epc = r_sepc();
@@ -65,9 +69,40 @@ usertrap(void)
     intr_on();
 
     syscall();
+  } else if (r_scause() == 15) {
+    // store page fault
+
+    va = (uint64)PGROUNDDOWN(r_stval());
+
+    pte = walk(p->pagetable, va, 0);
+
+    if ((*pte) & PTE_RSW0) {
+      // COW page - copy and restore write permissions
+
+      pa = PTE2PA(*pte);
+      flags = PTE_FLAGS(*pte);
+
+      flags &= ~PTE_RSW0;
+      flags |= PTE_W;
+
+      (uvmunmap(p->pagetable, va, 1, 0));
+
+      if ((mem = kalloc()) == 0) {
+        goto proc_kill;
+      }
+
+      memmove(mem, (char*)pa, PGSIZE);
+      if ((mappages(p->pagetable, va, PGSIZE, (uint64)mem, flags)) != 0) {
+        kfree(mem);
+        goto proc_kill;
+      }
+      kfree((void *)pa); // decrease refcount
+    } 
+
   } else if((which_dev = devintr()) != 0){
     // ok
   } else {
+    proc_kill:
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
     setkilled(p);

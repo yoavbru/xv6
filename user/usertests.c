@@ -91,6 +91,7 @@ copyout(char *s)
       printf("read(fd, %p, 8192) returned %d, not -1 or 0\n", addr, n);
       exit(1);
     }
+
     close(fd);
 
     int fds[2];
@@ -1062,21 +1063,29 @@ mem(char *s)
       *(char**)m2 = m1;
       m1 = m2;
     }
+
     while(m1){
       m2 = *(char**)m1;
       free(m1);
       m1 = m2;
     }
+
     m1 = malloc(1024*20);
     if(m1 == 0){
       printf("couldn't allocate mem?!!\n", s);
       exit(1);
     }
+
     free(m1);
+
     exit(0);
   } else {
     int xstatus;
+    // printf("%d\n", __LINE__);
+
     wait(&xstatus);
+    printf("%d\n", __LINE__);
+
     if(xstatus == -1){
       // probably page fault, so might be lazy lab,
       // so OK.
