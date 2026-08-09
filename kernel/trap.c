@@ -71,12 +71,16 @@ usertrap(void)
     syscall();
   } else if (r_scause() == 15) {
     // store page fault
-
+    
     va = (uint64)PGROUNDDOWN(r_stval());
+    
+    if (va >= MAXVA) {
+      goto proc_kill;
+    }
 
     pte = walk(p->pagetable, va, 0);
 
-    if ((*pte) & PTE_RSW0) {
+    if (((*pte) & PTE_RSW0) && ((*pte) & PTE_V)) {
       // COW page - copy and restore write permissions
 
       pa = PTE2PA(*pte);
@@ -85,19 +89,24 @@ usertrap(void)
       flags &= ~PTE_RSW0;
       flags |= PTE_W;
 
-      (uvmunmap(p->pagetable, va, 1, 0));
-
       if ((mem = kalloc()) == 0) {
+        // kfree((void *)pa); //
         goto proc_kill;
       }
+      
+      (uvmunmap(p->pagetable, va, 1, 0));
 
       memmove(mem, (char*)pa, PGSIZE);
       if ((mappages(p->pagetable, va, PGSIZE, (uint64)mem, flags)) != 0) {
         kfree(mem);
+        kfree((void *)pa);
         goto proc_kill;
       }
       kfree((void *)pa); // decrease refcount
     } 
+
+    else
+      goto proc_kill;
 
   } else if((which_dev = devintr()) != 0){
     // ok

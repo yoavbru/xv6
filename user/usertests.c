@@ -1070,6 +1070,7 @@ mem(char *s)
       m1 = m2;
     }
 
+
     m1 = malloc(1024*20);
     if(m1 == 0){
       printf("couldn't allocate mem?!!\n", s);
@@ -1078,13 +1079,12 @@ mem(char *s)
 
     free(m1);
 
+
     exit(0);
   } else {
     int xstatus;
-    // printf("%d\n", __LINE__);
 
     wait(&xstatus);
-    printf("%d\n", __LINE__);
 
     if(xstatus == -1){
       // probably page fault, so might be lazy lab,
